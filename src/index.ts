@@ -4,7 +4,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 interface Options {
+    inputDir: string;
     outputDir: string;
+    copyDirs: string[];
 }
 
 class BuildSpace {
@@ -15,7 +17,9 @@ class BuildSpace {
     private postprocessor?: (bs: BuildSpace) => any;
 
     options: Options = {
-        outputDir: 'out'
+        inputDir: 'src',
+        outputDir: 'out',
+        copyDirs: []
     }
 
     constructor(options?: Partial<Options>) {
@@ -57,9 +61,7 @@ class BuildSpace {
     }
 
     makeDirectory(dirPath: string) {
-        if (fs.existsSync(dirPath)) {
-            console.log('Directory Exists: ' + dirPath);
-        } else {
+        if (!fs.existsSync(dirPath)) {
             fs.mkdirSync(dirPath, { recursive: true });
         }
     }
@@ -67,9 +69,22 @@ class BuildSpace {
     makeDirectories() {
         // pull out the path before the last
         this.makeDirectory(this.options.outputDir);
-        this.pages.map(p => p.path.substring(0, p.path.lastIndexOf('/'))).filter(distinct).forEach(dir => {
-            this.makeDirectory(path.join(this.options.outputDir, dir));
-        });
+        this.pages.map(p => p.path.substring(0, p.path.lastIndexOf('/'))).filter(distinct).forEach(dir => 
+            this.makeDirectory(path.join(this.options.outputDir, dir))
+        );
+        this.options.copyDirs.forEach(dir => this.makeDirectory(path.join(this.options.outputDir, dir)));
+    }
+
+    copyDirectories() {
+        this.options.copyDirs.forEach(dir => {
+            const inputPath = path.normalize(path.join(this.options.inputDir, dir));
+            const outputPath = path.normalize(path.join(this.options.outputDir, dir));
+            fs.readdirSync(path.normalize(inputPath)).forEach(f => {
+                const src = path.normalize(path.join(inputPath, f));
+                const out = path.normalize(path.join(outputPath, f));
+                fs.copyFileSync(src, out);
+            });
+        })
     }
 
     allStyleSheets(): string[] {
@@ -85,12 +100,17 @@ class BuildSpace {
         fs.writeFileSync(path.join(this.options.outputDir, location) + '.html', contents);
     }
 
+    compilePages() {
+        this.pages.forEach(p => this.writeToFile(p.path, this.compilePage(p)));
+    }
+
     build() {
         if (this.preprocessor) {
             this.preprocessor(this);
         }
         this.makeDirectories();
-        this.pages.forEach(p => this.writeToFile(p.path, this.compilePage(p)));
+        this.compilePages();
+        this.copyDirectories();
         if (this.postprocessor) {
             this.postprocessor(this);
         }

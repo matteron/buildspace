@@ -1,8 +1,9 @@
 {
   "name": "buildspace",
   "version": "1.0.0",
-  "description": "Small static site generator",
-  "main": "index.js",
+  "description": "A tool to pipe around templates, data, and documents.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
