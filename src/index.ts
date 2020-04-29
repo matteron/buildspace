@@ -87,11 +87,6 @@ class BuildSpace {
         })
     }
 
-    allStyleSheets(): string[] {
-        // return this.pages.flatMap(p => p.stylesheets ?? ['']).filter(distinct);
-        return [];
-    }
-
     compilePage<D>(page: Page<D>): string {
         return page.template ? page.template.build(page.data) : '';
     }
