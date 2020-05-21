@@ -1,12 +1,12 @@
 import { Template, Page } from "./types/structure";
-import { distinct } from "./helpers";
+import { distinct, normalizedJoin } from "./helpers";
 import * as fs from 'fs';
 import * as path from 'path';
 
 interface Options {
-    inputDir: string;
-    outputDir: string;
-    copyDirs: string[];
+    source: string;
+    output: string;
+    copy: string[];
 }
 
 class BuildSpace {
@@ -17,9 +17,9 @@ class BuildSpace {
     private postprocessor?: (bs: BuildSpace) => any;
 
     options: Options = {
-        inputDir: 'src',
-        outputDir: 'out',
-        copyDirs: []
+        source: 'src',
+        output: 'out',
+        copy: []
     }
 
     constructor(options?: Partial<Options>) {
@@ -60,31 +60,58 @@ class BuildSpace {
         this.postprocessor = callback;
     }
 
+    tunnelSrc(dir: string, fileCallback?: (file: string) => void, dirCallback?: (dir: string) => void) {
+        const inputPath = normalizedJoin(this.options.inputDir, dir);
+        fs.readdirSync(inputPath).forEach(item => {
+            const cur = normalizedJoin(dir, item);
+            const loc = normalizedJoin(inputPath, item);
+            const info = fs.lstatSync(loc);
+            if (info.isDirectory()) {
+                if (dirCallback) {
+                    dirCallback(cur);
+                }
+                this.tunnelSrc(cur, fileCallback, dirCallback);
+            } else if (info.isFile()) {
+                if (fileCallback) {
+                    fileCallback(cur);
+                }
+            }
+        });
+    }
+
     makeDirectory(dirPath: string) {
         if (!fs.existsSync(dirPath)) {
             fs.mkdirSync(dirPath, { recursive: true });
         }
     }
 
+    makeOutputDir(dir: string) {
+        const loc = normalizedJoin(this.options.outputDir, dir);
+        this.makeDirectory(loc);
+    }
+
     makeDirectories() {
-        // pull out the path before the last
         this.makeDirectory(this.options.outputDir);
-        this.pages.map(p => p.path.substring(0, p.path.lastIndexOf('/'))).filter(distinct).forEach(dir => 
-            this.makeDirectory(path.join(this.options.outputDir, dir))
-        );
-        this.options.copyDirs.forEach(dir => this.makeDirectory(path.join(this.options.outputDir, dir)));
+        this.pages.map(p => p.path.substring(0, p.path.lastIndexOf('/')))
+            .filter(distinct)
+            .forEach(dir => this.makeOutputDir(dir));
+        this.options.copyDirs.forEach(dir => {
+            this.tunnelSrc(dir, _ => {}, cur => {
+                this.makeOutputDir(cur);
+            });
+        });
+    }
+
+    copyFile(file: string) {
+        const src = normalizedJoin(this.options.inputDir, file);
+        const out = normalizedJoin(this.options.outputDir, file);
+        fs.copyFileSync(src, out);
     }
 
     copyDirectories() {
-        this.options.copyDirs.forEach(dir => {
-            const inputPath = path.normalize(path.join(this.options.inputDir, dir));
-            const outputPath = path.normalize(path.join(this.options.outputDir, dir));
-            fs.readdirSync(path.normalize(inputPath)).forEach(f => {
-                const src = path.normalize(path.join(inputPath, f));
-                const out = path.normalize(path.join(outputPath, f));
-                fs.copyFileSync(src, out);
-            });
-        })
+        this.options.copyDirs.forEach(dir => 
+            this.tunnelSrc(dir, file => this.copyFile(file))
+        );
     }
 
     compilePage<D>(page: Page<D>): string {

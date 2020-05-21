@@ -7,7 +7,7 @@ It's not necessarily a a static site generator, but a small component to help bu
 Buildspace was made for myself first, it's probably doing a bunch of stuff incorrectly, but this isn't meant for mass consumption, so oh well.
 
 ## Basic Usage
-Of course, install with npm.
+Install with npm.
 
 `npm i buildspace`
 
@@ -26,9 +26,26 @@ bs.build();
 
 You create a new instance of Buildspace, register pages to it, along with the Template it will use.  Then you simply tell buildspace to run using `.build()`.
 
-Templates are very basic classes, all they are required to have is a function called `build` which takes in data of some kind and outputs a string.
+Templates are very basic classes, all they are required to have is a function called `build` which optionally takes in data of some kind and outputs a string.
 
-Pages are a bit more complicated, but are also simple classes, required to have the properties, `path` and `data`.  Path is the relative path where buildspace will store the compiled html file and data is the data the page provides the template.
+```JavaScript
+// Basic Template Example
+module.exports = class Template {
+	build = (data) => '';
+}
+```
+
+Pages are a bit more complicated, but are also simple classes.  They are required to have the properties `path` and `data`.  Path is the relative path where buildspace will store the compiled html file and data is the data the page provides the template.
+
+```JavaScript
+// Basic Page Example
+module.exports = class Page {
+	path = 'index';
+	data = {
+		hello: 'world'
+	};
+}
+```
 
 ## [Slightly More] Advanced Setup
 
@@ -51,19 +68,25 @@ Buildspace also has a few options that can be passed into it's constructor to mo
 ```JavaScript
 const bs = new Buildspace({
 	inputDir: 'src',
-	outputDir: 'dist',
+	outputDir: 'out',
 	copyDirs: ['media']
 });
 ```
 
-#### `inputDir`
+#### `source`
 `Default: src`
-Input Directory is where the source code of your site lives.  This isn't actually used for anything besides in conjunction with the copyDirs property by default.
+Input Directory where the source code of your site lives.  This isn't actually used for anything besides in conjunction with the copy directories property by default.
 
-#### `outputDir`
+#### `output`
 `Default: out`
-Output directory is where buildspace will write all of its output to.
+Output directory where buildspace will write all of its output to.
 
-#### `copyDirs`
+#### `copy`
 `Default: []`
 Copy directories is an array of strings which list all the directories which you would like buildspace to copy to the output without any further modification.  I typically add things like my fonts or css files to this list.
+
+## Changelog
+
+#### `0.1.1`:
+- Fixed issue where copying would fail when it reached subdirectories.
+- Simplified named of the option parameters. 
