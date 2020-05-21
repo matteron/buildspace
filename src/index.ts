@@ -61,7 +61,7 @@ class BuildSpace {
     }
 
     tunnelSrc(dir: string, fileCallback?: (file: string) => void, dirCallback?: (dir: string) => void) {
-        const inputPath = normalizedJoin(this.options.inputDir, dir);
+        const inputPath = normalizedJoin(this.options.source, dir);
         fs.readdirSync(inputPath).forEach(item => {
             const cur = normalizedJoin(dir, item);
             const loc = normalizedJoin(inputPath, item);
@@ -86,16 +86,16 @@ class BuildSpace {
     }
 
     makeOutputDir(dir: string) {
-        const loc = normalizedJoin(this.options.outputDir, dir);
+        const loc = normalizedJoin(this.options.output, dir);
         this.makeDirectory(loc);
     }
 
     makeDirectories() {
-        this.makeDirectory(this.options.outputDir);
+        this.makeDirectory(this.options.output);
         this.pages.map(p => p.path.substring(0, p.path.lastIndexOf('/')))
             .filter(distinct)
             .forEach(dir => this.makeOutputDir(dir));
-        this.options.copyDirs.forEach(dir => {
+        this.options.copy.forEach(dir => {
             this.tunnelSrc(dir, _ => {}, cur => {
                 this.makeOutputDir(cur);
             });
@@ -103,13 +103,13 @@ class BuildSpace {
     }
 
     copyFile(file: string) {
-        const src = normalizedJoin(this.options.inputDir, file);
-        const out = normalizedJoin(this.options.outputDir, file);
+        const src = normalizedJoin(this.options.source, file);
+        const out = normalizedJoin(this.options.output, file);
         fs.copyFileSync(src, out);
     }
 
     copyDirectories() {
-        this.options.copyDirs.forEach(dir => 
+        this.options.copy.forEach(dir => 
             this.tunnelSrc(dir, file => this.copyFile(file))
         );
     }
@@ -119,7 +119,7 @@ class BuildSpace {
     }
 
     writeToFile(location: string, contents: string, ) {
-        fs.writeFileSync(path.join(this.options.outputDir, location) + '.html', contents);
+        fs.writeFileSync(path.join(this.options.output, location) + '.html', contents);
     }
 
     compilePages() {
