@@ -1,9 +1,12 @@
 {
   "name": "buildspace",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A tool to pipe around templates, data, and documents.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",

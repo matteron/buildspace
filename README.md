@@ -87,6 +87,9 @@ Copy directories is an array of strings which list all the directories which you
 
 ## Changelog
 
-#### `0.1.1`:
+`0.1.2`
+- Stopped using .npmignore
+
+`0.1.1`:
 - Fixed issue where copying would fail when it reached subdirectories.
 - Simplified named of the option parameters. 
