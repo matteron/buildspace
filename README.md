@@ -2,7 +2,7 @@
 
 Buildspace is a tiny tool meant to replace all the boilerplate code I keep writing to build my static sites.
 
-It's not necessarily a a static site generator, but a small component to help build static site generators.  It's extremely simple in functionality, it can effectively just pass data into templates and copy files.
+It's not necessarily a static site generator, but a small build tool to help build static site generators.  It's extremely simple in functionality, effectively only able to compile templates and copy files.
 
 Buildspace was made for myself first, it's probably doing a bunch of stuff incorrectly, but this isn't meant for mass consumption, so oh well.
 
@@ -93,3 +93,6 @@ Copy directories is an array of strings which list all the directories which you
 `0.1.1`:
 - Fixed issue where copying would fail when it reached subdirectories.
 - Simplified named of the option parameters. 
+
+`0.1.0`:
+- Initial Release
