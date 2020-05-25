@@ -96,6 +96,7 @@ class BuildSpace {
             .filter(distinct)
             .forEach(dir => this.makeOutputDir(dir));
         this.options.copy.forEach(dir => {
+            this.makeOutputDir(dir);
             this.tunnelSrc(dir, _ => {}, cur => {
                 this.makeOutputDir(cur);
             });

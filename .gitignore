@@ -1,3 +1,6 @@
 node_modules
 .vscode
 lib
+out
+test
+test.js
