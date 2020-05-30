@@ -55,11 +55,8 @@ Since the intent of any library is to minimize code reuse, I've added a few func
 #### `.setDefaultTemplate(TemplateConstructor)`
 This function takes a template class and sets buildspace to auto assign it to any page registration without a template specified.
 
-#### `.bulkRegister(pageArray)`
-The function will loop through the provided page array and register all of them using the default template.
-
-#### `.addPreprocessor(callback)` and `addPostprocessor(callback)`
-These two functions will setup buildspace to run the callbacks before and after the main build process runs respectively.  They will pass the current instance of buildspace to the callback function so you can use any of it's properties.
+#### `.bulkRegister(pageArray, template?)`
+The function will loop through the provided page array and register all of them using the default template.  Optionally you may pass a Template class into this function to be used instead of the default.
 
 ### Options
 
@@ -84,15 +81,3 @@ Output directory where buildspace will write all of its output to.
 #### `copy`
 `Default: []`
 Copy directories is an array of strings which list all the directories which you would like buildspace to copy to the output without any further modification.  I typically add things like my fonts or css files to this list.
-
-## Changelog
-
-`0.1.2`
-- Stopped using .npmignore
-
-`0.1.1`:
-- Fixed issue where copying would fail when it reached subdirectories.
-- Simplified named of the option parameters. 
-
-`0.1.0`:
-- Initial Release

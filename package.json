@@ -1,6 +1,6 @@
 {
   "name": "buildspace",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "A tool to pipe around templates, data, and documents.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

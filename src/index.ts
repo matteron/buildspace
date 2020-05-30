@@ -45,19 +45,12 @@ class BuildSpace {
         this.pages.push(page);
     }
 
-    bulkRegister(pages: Page<any>[]) {
+    bulkRegister<D, P extends Page<D>, T extends Template<D>>(pages: P[], tCtor?: new (...args: any[]) => T) {
+        const template = tCtor ? new tCtor() : this.defaultTemplate;
         pages.forEach(p => {
-            p.template = this.defaultTemplate;
+            p.template = template;
             this.pages.push(p);
         })
-    }
-
-    addPreprocessor(callback: (bs: BuildSpace) => any) {
-        this.preprocessor = callback;
-    }
-
-    addPostprocessor(callback: (bs: BuildSpace) => any) {
-        this.postprocessor = callback;
     }
 
     tunnelSrc(dir: string, fileCallback?: (file: string) => void, dirCallback?: (dir: string) => void) {
@@ -128,15 +121,9 @@ class BuildSpace {
     }
 
     build() {
-        if (this.preprocessor) {
-            this.preprocessor(this);
-        }
         this.makeDirectories();
         this.compilePages();
         this.copyDirectories();
-        if (this.postprocessor) {
-            this.postprocessor(this);
-        }
     }
     enter = () => this.build();
 }
