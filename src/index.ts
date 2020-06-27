@@ -9,12 +9,13 @@ interface Options {
     copy: string[];
 }
 
+type TConstructor<D> = new (...args: any[]) => Template<D>;
+type PConstructor<D> = new (...args: any[]) => Page<D>;
+
 export class BuildSpace {
     
     pages: Page<any>[] = [];
     private defaultTemplate?: Template<any>;
-    private preprocessor?: (bs: BuildSpace) => any;
-    private postprocessor?: (bs: BuildSpace) => any;
 
     options: Options = {
         source: 'src',
@@ -28,11 +29,11 @@ export class BuildSpace {
         }
     }
 
-    setDefaultTemplate<T extends Template<any>>(tCtor: new (...args: any[]) => T) {
+    setDefaultTemplate(tCtor: TConstructor<any>) {
         this.defaultTemplate = new tCtor();
     }
 
-    register<D, P extends Page<D>, T extends Template<D>>(pCtor: new (...args: any[]) => P, tCtor?: new (...args: any[]) => T) {
+    register<D>(pCtor: PConstructor<D>, tCtor?: TConstructor<D>) {
         let page = new pCtor();
         if (tCtor) {
             page.template = new tCtor();
@@ -45,7 +46,7 @@ export class BuildSpace {
         this.pages.push(page);
     }
 
-    bulkRegister<D, P extends Page<D>, T extends Template<D>>(pages: P[], tCtor?: new (...args: any[]) => T) {
+    bulkRegister<D, P extends Page<D>>(pages: P[], tCtor?: TConstructor<D>) {
         const template = tCtor ? new tCtor() : this.defaultTemplate;
         pages.forEach(p => {
             p.template = template;

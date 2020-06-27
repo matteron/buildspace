@@ -1,5 +1,8 @@
 ## Changelog
 
+`0.1.7`
+- Simplifying typing.
+
 `0.1.6`
 - Standardized exports.
 
