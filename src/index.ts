@@ -9,7 +9,7 @@ interface Options {
     copy: string[];
 }
 
-class BuildSpace {
+export class BuildSpace {
     
     pages: Page<any>[] = [];
     private defaultTemplate?: Template<any>;
@@ -127,5 +127,3 @@ class BuildSpace {
     }
     enter = () => this.build();
 }
-
-export = BuildSpace;

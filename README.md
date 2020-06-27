@@ -13,7 +13,7 @@ Install with npm.
 
 Then some basic boilerplating (sorry can't get rid of all of it)
 ```JavaScript
-const BuildSpace = require('buildspace');
+const { BuildSpace } = require('buildspace');
 const Template = require('./src/template');
 const Page = require('./src/pages');
 

@@ -1,5 +1,8 @@
 ## Changelog
 
+`0.1.6`
+- Standardized exports.
+
 `0.1.5`
 - Remove pre- and post- processing as they were redundant.
 - Added ability to pass Template into bulk register function.
