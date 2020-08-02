@@ -114,7 +114,7 @@ export class BuildSpace {
     }
 
     writeToFile(location: string, contents: string, ) {
-        fs.writeFileSync(path.join(this.options.output, location) + '.html', contents);
+        fs.writeFileSync(path.join(this.options.output, location), contents);
     }
 
     compilePages() {
@@ -126,5 +126,5 @@ export class BuildSpace {
         this.compilePages();
         this.copyDirectories();
     }
-    enter = () => this.build();
+    enter = this.build;
 }
